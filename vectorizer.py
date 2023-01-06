@@ -1,13 +1,10 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 
 import numpy as np
-from gensim.models import KeyedVectors
-from gensim.models.fasttext import load_facebook_vectors
 from sklearn.feature_extraction.text import TfidfVectorizer
 from utils.utils_embedding import checkOOVwords, createRandomOOV, wcbow, avgcbow
 from utils.utils_tfidf import identity_tokenizer
 from EmbeddingLoader import EmbeddingLoader
-
 
 class SentenceEmbeddingVectorizer(BaseEstimator, TransformerMixin):
     def __init__(self, embedding, embedding_name, use_tfidf_weights=True, norm=False):
