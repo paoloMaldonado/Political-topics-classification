@@ -50,7 +50,7 @@ class SVM_Model:
                        'svm__gamma': np.logspace(-1, 1, 10)
                        }]
 
-            search = GridSearchCV(pipe, param_grid=params, verbose=2, n_jobs=3)
+            search = GridSearchCV(pipe, param_grid=params, verbose=2, n_jobs=2)
             return search.fit(X, y)
 
 
