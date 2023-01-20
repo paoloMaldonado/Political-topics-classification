@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import tensorflow_addons as tfa
 import keras_tuner as kt
-from ConvHyperModel import ConvHyperModel
+from CNN_hypermodel import ConvHyperModel
 
 class AutoCNN:
     def __init__(self):
