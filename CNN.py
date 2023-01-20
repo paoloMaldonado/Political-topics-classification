@@ -76,7 +76,8 @@ class AutoCNN:
 
         hypermodel = ConvHyperModel()
         model = hypermodel.build(best_hps)
-        model = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split)
+        model.fit(X, y, batch_size=best_hps.get('batch_size'), epochs=epochs, validation_split=validation_split)
+        #model = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split)
         self.hypermodel = model
         return model
     
