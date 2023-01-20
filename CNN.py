@@ -43,33 +43,35 @@ class AutoCNN:
         print("*"*10)
         print('Best epoch: %d' % (best_epoch,))
 
-    def get_best_hyperparamenters(self):
+    def get_best_hyperparamenters(self, verbose=1):
         if self.tuner == None:
             print("No tuner was found, please run fit_and_tune() method first")
             return
         
         best_hps=self.tuner.get_best_hyperparameters()[0]
-        print("Hyperparameters")
-        print("*"*10)
-        print("Number of convolutional layers:", best_hps.get('num_conv_layers'))
-        print("Number of filters:", best_hps.get('filters'))
-        print("Dropout:", best_hps.get('dropout'))
-        print("Number of linear layers:", best_hps.get('num_layers'))
+        
+        if verbose == 1:
+            print("Hyperparameters")
+            print("*"*10)
+            print("Number of convolutional layers:", best_hps.get('num_conv_layers'))
+            print("Number of filters:", best_hps.get('filters'))
+            print("Dropout:", best_hps.get('dropout'))
+            print("Number of linear layers:", best_hps.get('num_layers'))
 
-        for i in range(best_hps.get('num_layers')):
-            print(f"Dense_{i+1}:", best_hps.get(f"units_{i}"))
+            for i in range(best_hps.get('num_layers')):
+                print(f"Dense_{i+1}:", best_hps.get(f"units_{i}"))
 
-        print("Activation linear layer:", best_hps.get('activation_linear_layer'))
-        print("Batch normalization:", best_hps.get('batchnorm'))
-        print("Relu before softmax:", best_hps.get('relu_before_softmax'))
-        print("Batch size:", best_hps.get('batch_size'))
-        print("Learning rate", best_hps.get('learning_rate'))
-        print("*"*10)
+            print("Activation linear layer:", best_hps.get('activation_linear_layer'))
+            print("Batch normalization:", best_hps.get('batchnorm'))
+            print("Relu before softmax:", best_hps.get('relu_before_softmax'))
+            print("Batch size:", best_hps.get('batch_size'))
+            print("Learning rate", best_hps.get('learning_rate'))
+            print("*"*10)
 
         return best_hps
 
     def fit(self, X, y, epochs, validation_split=0.0):
-        best_hps = self.get_best_hyperparamenters()
+        best_hps = self.get_best_hyperparamenters(0)
 
         hypermodel = ConvHyperModel()
         model = hypermodel.build(best_hps)
