@@ -21,7 +21,7 @@ class AutoCNN:
                                         max_trials=n_trials,
                                         overwrite=True,
                                         seed=2023,
-                                        directory="CNN_finetune",
+                                        directory="../CNN_finetune",
                                         project_name="politics")
         self.tuner = tuner
         tuner.search(X, y, epochs=epochs, validation_split=validation_split)
@@ -31,7 +31,7 @@ class AutoCNN:
         if not refit:
             return 
 
-        tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="logs")
+        tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="../logs")
         hypermodel = ConvHyperModel()
         model = hypermodel.build(best_hps)
         history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, callbacks=[tensorboard_callback])   
