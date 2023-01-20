@@ -28,6 +28,7 @@ class AutoCNN:
         
         best_hps = self.get_best_hyperparamenters()
 
+        print("Refit with best hyperparameters")
         if not refit:
             return 
 
@@ -79,7 +80,8 @@ class AutoCNN:
         self.hypermodel = hypermodel
         return hypermodel
     
-    def predict(X_test, y_test):
+    def predict(self, X_test, y_test):
+        print("Predicting with test data")
         eval_result = self.hypermodel.evaluate(X_test, y_test)
         print("[test loss, test f1 score,[macro]]:", eval_result)
         return 
