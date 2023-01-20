@@ -76,9 +76,9 @@ class AutoCNN:
 
         hypermodel = ConvHyperModel()
         model = hypermodel.build(best_hps)
-        history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split)
-        self.hypermodel = hypermodel
-        return hypermodel
+        model = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split)
+        self.hypermodel = model
+        return model
     
     def predict(self, X_test, y_test):
         print("Predicting with test data")
