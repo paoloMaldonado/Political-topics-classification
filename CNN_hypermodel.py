@@ -48,7 +48,8 @@ class ConvHyperModel(kt.HyperModel):
         model=tf.keras.Model(inputs, x)
         model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=hp_learning_rate),
                       loss=tf.keras.losses.CategoricalCrossentropy(from_logits=False),
-                      metrics=[tfa.metrics.F1Score(num_classes=5, average='micro', name='f1_score_micro')])
+                      metrics=[tfa.metrics.F1Score(num_classes=5, average='micro', name='f1_score_micro'), 
+                               tfa.metrics.F1Score(num_classes=5, average='macro', name='f1_score_macro')])
 
         return model
 
