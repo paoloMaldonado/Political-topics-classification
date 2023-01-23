@@ -68,7 +68,10 @@ class AutoCNN:
         if verbose == 1:
             print("Hyperparameters")
             print("*"*10)
-            print("Number of convolutional layers:", best_hps.get('num_conv_layers'))
+            if self.hypermodel == "cnn":
+                print("Number of convolutional layers:", best_hps.get('num_conv_layers'))
+            if self.hypermodel == "simple_cnn":
+                print("Kernel size:", best_hps.get('kernel_size'))
             print("Number of filters:", best_hps.get('filters'))
             print("Dropout:", best_hps.get('dropout'))
             print("Number of linear layers:", best_hps.get('num_layers'))
