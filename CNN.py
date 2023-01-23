@@ -4,6 +4,14 @@ import tensorflow_addons as tfa
 import keras_tuner as kt
 from CNN_hypermodel import ConvHyperModel, SimpleConvHyperModel
 
+def instanciateHypermodel(hypermodel):
+    if hypermodel == "cnn":
+        return ConvHyperModel()
+    elif hypermodel == "simple_cnn":
+        return SimpleConvHyperModel()
+    return
+
+
 class AutoCNN:
     def __init__(self, hypermodel):
         self.tuner = None
@@ -22,7 +30,7 @@ class AutoCNN:
         else:
             print("Objective function is unknown")
 
-        tuner = kt.BayesianOptimization(self.hypermodel,
+        tuner = kt.BayesianOptimization(instanciateHypermodel(self.hypermodel),
                                         objective=objective_list,
                                         max_trials=n_trials,
                                         overwrite=True,
@@ -39,7 +47,7 @@ class AutoCNN:
             return 
 
         tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="../logs")
-        hypermodel = ConvHyperModel()
+        hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
         history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, callbacks=[tensorboard_callback])   
 
@@ -80,7 +88,7 @@ class AutoCNN:
     def fit(self, X, y, epochs, validation_split=0.0):
         best_hps = self.get_best_hyperparamenters(0)
 
-        hypermodel = ConvHyperModel()
+        hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
         model.fit(X, y, batch_size=best_hps.get('batch_size'), epochs=epochs, validation_split=validation_split)
         #model = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split)
