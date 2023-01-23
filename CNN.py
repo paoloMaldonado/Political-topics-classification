@@ -8,16 +8,21 @@ class AutoCNN:
     def __init__(self):
         self.tuner = None
         self.hypermodel = None
-        self.objective = kt.Objective("val_f1_score_micro", direction="max")
 
-    def fit_and_tune(self, X, y, epochs=100, validation_split=0.2, objective="val_f1_score_micro", n_trials=100, refit=True):        
-        if objective == "val_f1_score_macro":
-            self.objective = kt.Objective("val_f1_score_macro", direction="max")
-        elif objective == "val_loss":
-            self.objective = "val_loss"
+    def fit_and_tune(self, X, y, epochs=100, validation_split=0.2, objective=["val_f1_score_micro"], n_trials=100, refit=True):        
+        objective_list = []
+
+        if "val_f1_score_macro" in objective:
+            objective_list.append(kt.Objective("val_f1_score_macro", direction="max"))
+        if "val_f1_score_micro" in objective:
+            objective_list.append(kt.Objective("val_f1_score_micro", direction="max"))
+        if "val_loss" in objective:
+            objective_list.append("val_loss")
+        else:
+            print("Objective function is unknown")
 
         tuner = kt.BayesianOptimization(ConvHyperModel(),
-                                        objective=self.objective,
+                                        objective=objective_list,
                                         max_trials=n_trials,
                                         overwrite=True,
                                         seed=2023,
@@ -37,12 +42,12 @@ class AutoCNN:
         model = hypermodel.build(best_hps)
         history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, callbacks=[tensorboard_callback])   
 
-        val_per_epoch = history.history[objective]
-        if objective == "val_loss":
-            best_epoch = val_per_epoch.index(min(val_per_epoch)) + 1
-        best_epoch = val_per_epoch.index(max(val_per_epoch)) + 1
-        print("*"*10)
-        print('Best epoch: %d' % (best_epoch,))
+        # val_per_epoch = history.history[objective]
+        # if objective == "val_loss":
+        #     best_epoch = val_per_epoch.index(min(val_per_epoch)) + 1
+        # best_epoch = val_per_epoch.index(max(val_per_epoch)) + 1
+        # print("*"*10)
+        # print('Best epoch: %d' % (best_epoch,))
 
     def get_best_hyperparamenters(self, verbose=1):
         if self.tuner == None:
