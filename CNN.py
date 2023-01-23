@@ -21,10 +21,10 @@ class AutoCNN:
     def fit_and_tune(self, X, y, epochs=100, validation_split=0.2, objective=["val_f1_score_micro"], n_trials=100, refit=True):        
         objective_list = []
 
-        if "val_f1_score_macro" in objective:
-            objective_list.append(kt.Objective("val_f1_score_macro", direction="max"))
         if "val_f1_score_micro" in objective:
             objective_list.append(kt.Objective("val_f1_score_micro", direction="max"))
+        if "val_f1_score_macro" in objective:
+            objective_list.append(kt.Objective("val_f1_score_macro", direction="max"))
         if "val_loss" in objective:
             objective_list.append("val_loss")
         else:
