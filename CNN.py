@@ -2,12 +2,13 @@ import numpy as np
 import tensorflow as tf
 import tensorflow_addons as tfa
 import keras_tuner as kt
-from CNN_hypermodel import ConvHyperModel
+from CNN_hypermodel import ConvHyperModel, SimpleConvHyperModel
 
 class AutoCNN:
-    def __init__(self):
+    def __init__(self, hypermodel):
         self.tuner = None
-        self.hypermodel = None
+        self.model = None
+        self.hypermodel = hypermodel
 
     def fit_and_tune(self, X, y, epochs=100, validation_split=0.2, objective=["val_f1_score_micro"], n_trials=100, refit=True):        
         objective_list = []
@@ -21,7 +22,7 @@ class AutoCNN:
         else:
             print("Objective function is unknown")
 
-        tuner = kt.BayesianOptimization(ConvHyperModel(),
+        tuner = kt.BayesianOptimization(self.hypermodel,
                                         objective=objective_list,
                                         max_trials=n_trials,
                                         overwrite=True,
@@ -83,12 +84,12 @@ class AutoCNN:
         model = hypermodel.build(best_hps)
         model.fit(X, y, batch_size=best_hps.get('batch_size'), epochs=epochs, validation_split=validation_split)
         #model = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split)
-        self.hypermodel = model
+        self.model = model
         return model
     
     def predict(self, X_test, y_test):
         print("Predicting with test data")
-        eval_result = self.hypermodel.evaluate(X_test, y_test)
+        eval_result = self.model.evaluate(X_test, y_test)
         print("[test loss, test f1 score,[macro]]:", eval_result)
         return 
 
