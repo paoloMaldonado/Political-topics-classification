@@ -48,7 +48,7 @@ class AutoCNN:
 
 
         self.tuner = tuner
-        stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
+        stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
         tuner.search(X, y, epochs=epochs, validation_split=validation_split, callbacks=[stop_early])
         
         best_hps = self.get_best_hyperparamenters()
@@ -111,8 +111,10 @@ class AutoCNN:
         return model
     
     def predict(self, X_test, y_test):
+        best_hps = self.get_best_hyperparamenters(0)    
+
         print("Predicting with test data")
-        eval_result = self.model.evaluate(X_test, y_test)
+        eval_result = self.model.evaluate(X_test, y_test, batch_size=best_hps.get('batch_size'))
         print("[test loss, test f1 score,[macro]]:", eval_result)
         return 
 

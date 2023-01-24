@@ -26,7 +26,8 @@ class ConvHyperModel(kt.HyperModel):
             conv_layers.append(conv_pool)
 
         x = layers.Concatenate()(conv_layers)
-        x = layers.Dropout(rate=hp_dropout_rate)(x)
+        if hp.Boolean("dropout_active"):
+            x = layers.Dropout(rate=hp_dropout_rate)(x)
         x = layers.Flatten()(x)
 
         for i in range(hp.Int("num_layers", 0, 3)):
@@ -37,7 +38,8 @@ class ConvHyperModel(kt.HyperModel):
             x = layers.Activation(activation=hp_activation)(x)
 
         # Final Fully Connected
-        x = layers.Dropout(rate=hp_dropout_rate)(x)
+        if hp.Boolean("dropout_active"):
+            x = layers.Dropout(rate=hp_dropout_rate)(x)
         x = layers.Dense(5, activation=None)(x)
         if hp.Boolean("batchnorm"):
             x = layers.BatchNormalization()(x)
@@ -71,7 +73,7 @@ class SimpleConvHyperModel(kt.HyperModel):
         hp_dropout_rate = hp.Choice('dropout', values=[0.15, 0.25, 0.5, 0.75, 0.8])
         hp_learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4, 1e-5])
         hp_filters = hp.Choice('filters', values=[10, 50, 100, 150])
-        hp_activation = hp.Choice('activation_linear_layer', values=["relu", "sigmoid"])
+        hp_activation = hp.Choice('activation_linear_layer', values=["relu", "sigmoid", None])
         hp_kernel_size = hp.Choice('kernel_size', values=[2, 3, 4])
 
         conv = layers.Conv1D(filters=hp_filters, kernel_size=hp_kernel_size)(inputs)
@@ -80,7 +82,8 @@ class SimpleConvHyperModel(kt.HyperModel):
         conv = layers.Activation("relu")(conv)
         x = layers.MaxPooling1D(pool_size=conv.shape[1], strides=1)(conv)
 
-        x = layers.Dropout(rate=hp_dropout_rate)(x)
+        if hp.Boolean("dropout_active"):
+            x = layers.Dropout(rate=hp_dropout_rate)(x)
         x = layers.Flatten()(x)
 
         for i in range(hp.Int("num_layers", 0, 3)):
@@ -91,7 +94,8 @@ class SimpleConvHyperModel(kt.HyperModel):
             x = layers.Activation(activation=hp_activation)(x)
 
         # Final Fully Connected
-        x = layers.Dropout(rate=hp_dropout_rate)(x)
+        if hp.Boolean("dropout_active"):
+            x = layers.Dropout(rate=hp_dropout_rate)(x)
         x = layers.Dense(5, activation=None)(x)
         if hp.Boolean("batchnorm"):
             x = layers.BatchNormalization()(x)
