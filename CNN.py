@@ -87,6 +87,7 @@ class AutoCNN:
             print("Number of filters:", best_hps.get('filters'))
             print("Dropout:", best_hps.get('dropout'))
             print("Number of linear layers:", best_hps.get('num_layers'))
+            print("Dropout:", best_hps.get('dropout_active"'))
 
             for i in range(best_hps.get('num_layers')):
                 print(f"Dense_{i+1}:", best_hps.get(f"units_{i}"))
