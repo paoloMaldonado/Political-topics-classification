@@ -30,15 +30,26 @@ class AutoCNN:
         else:
             print("Objective function is unknown")
 
-        tuner = kt.BayesianOptimization(instanciateHypermodel(self.hypermodel),
-                                        objective=objective_list,
-                                        max_trials=n_trials,
-                                        overwrite=True,
-                                        seed=2023,
-                                        directory="../CNN_finetune",
-                                        project_name="politics")
+        # tuner = kt.BayesianOptimization(instanciateHypermodel(self.hypermodel),
+        #                                 objective=objective_list,
+        #                                 max_trials=n_trials,
+        #                                 overwrite=True,
+        #                                 seed=2023,
+        #                                 directory="../CNN_finetune",
+        #                                 project_name="politics")
+
+        tuner = kt.Hyperband(instanciateHypermodel(self.hypermodel),
+                            objective=objective_list,
+                            max_epochs=30,
+                            directory="../CNN_finetune",
+                            project_name="politics",
+                            overwrite=True,
+                            seed=2023)
+
+
         self.tuner = tuner
-        tuner.search(X, y, epochs=epochs, validation_split=validation_split)
+        stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
+        tuner.search(X, y, epochs=epochs, validation_split=validation_split, callbacks=[stop_early])
         
         best_hps = self.get_best_hyperparamenters()
 
@@ -47,9 +58,10 @@ class AutoCNN:
             return 
 
         tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="../logs")
+
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
-        history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, callbacks=[tensorboard_callback])   
+        history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, callbacks=[tensorboard_callback, stop_early])   
 
         # val_per_epoch = history.history[objective]
         # if objective == "val_loss":
