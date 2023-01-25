@@ -102,16 +102,11 @@ class AutoCNN:
 
         return best_hps
 
-    def fit(self, X, y, epochs, validation_split=0.0, for_refit=False):
+    def fit(self, X, y, epochs, validation_split=0.0):
         best_hps = self.get_best_hyperparamenters(0)
 
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
-        if for_refit:
-            stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
-            tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="../logs")
-            model = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, callbacks=[tensorboard_callback, stop_early])
-            return
         model.fit(X, y, batch_size=best_hps.get('batch_size'), epochs=epochs, validation_split=validation_split)
         self.model = model
         return model
