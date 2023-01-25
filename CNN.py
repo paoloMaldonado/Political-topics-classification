@@ -18,7 +18,7 @@ class AutoCNN:
         self.model = None
         self.hypermodel = hypermodel
 
-    def fit_and_tune(self, X, y, epochs=50, validation_split=0.2, objective=["val_f1_score_micro"], n_trials=100, refit=True):        
+    def fit_and_tune(self, X, y, epochs=50, validation_split=0.2, objective=["val_f1_score_micro"], n_trials=100, refit=True, **kwargs):        
         objective_list = []
 
         if "val_f1_score_micro" in objective:
@@ -42,8 +42,8 @@ class AutoCNN:
                             objective=objective_list,
                             max_epochs=50,
                             hyperband_iterations=3,
-                            directory="../CNN_finetune",
-                            project_name="politics",
+                            directory=kwargs['directory'],
+                            project_name=kwargs['project_name'],
                             overwrite=True,
                             seed=2023)
 
