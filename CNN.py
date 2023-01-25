@@ -18,7 +18,7 @@ class AutoCNN:
         self.model = None
         self.hypermodel = hypermodel
 
-    def fit_and_tune(self, X, y, epochs=100, validation_split=0.2, objective=["val_f1_score_micro"], n_trials=100, refit=True):        
+    def fit_and_tune(self, X, y, epochs=50, validation_split=0.2, objective=["val_f1_score_micro"], n_trials=100, refit=True):        
         objective_list = []
 
         if "val_f1_score_micro" in objective:
@@ -40,7 +40,8 @@ class AutoCNN:
 
         tuner = kt.Hyperband(instanciateHypermodel(self.hypermodel),
                             objective=objective_list,
-                            max_epochs=30,
+                            max_epochs=50,
+                            hyperband_iterations=5,
                             directory="../CNN_finetune",
                             project_name="politics",
                             overwrite=True,
