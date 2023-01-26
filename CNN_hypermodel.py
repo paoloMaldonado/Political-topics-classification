@@ -73,7 +73,7 @@ class SimpleConvHyperModel(kt.HyperModel):
         hp_dropout_rate = hp.Choice('dropout', values=[0.15, 0.25, 0.5, 0.75, 0.8])
         hp_learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4, 1e-5])
         hp_filters = hp.Choice('filters', values=[10, 50, 100, 150])
-        hp_activation = hp.Choice('activation_linear_layer', values=["relu", "sigmoid", None])
+        hp_activation = hp.Choice('activation_linear_layer', values=["relu", "sigmoid"])
         hp_kernel_size = hp.Choice('kernel_size', values=[2, 3, 4])
 
         conv = layers.Conv1D(filters=hp_filters, kernel_size=hp_kernel_size)(inputs)
