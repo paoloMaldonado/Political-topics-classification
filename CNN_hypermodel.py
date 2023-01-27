@@ -26,11 +26,11 @@ class ConvHyperModel(kt.HyperModel):
             conv_layers.append(conv_pool)
 
         x = layers.Concatenate()(conv_layers)
-        if hp.Boolean("dropout_active"):
-            x = layers.Dropout(rate=hp_dropout_rate)(x)
         x = layers.Flatten()(x)
 
         for i in range(hp.Int("num_layers", 0, 3)):
+            if hp.Boolean("dropout_active"):
+                x = layers.Dropout(rate=hp_dropout_rate)(x)
             x = layers.Dense(units=hp.Int(f"units_{i}", min_value=32, max_value=512, step=32), 
                              activation=None)(x)
             if hp.Boolean("batchnorm"):
@@ -82,11 +82,11 @@ class SimpleConvHyperModel(kt.HyperModel):
         conv = layers.Activation("relu")(conv)
         x = layers.MaxPooling1D(pool_size=conv.shape[1], strides=1)(conv)
 
-        if hp.Boolean("dropout_active"):
-            x = layers.Dropout(rate=hp_dropout_rate)(x)
         x = layers.Flatten()(x)
 
         for i in range(hp.Int("num_layers", 0, 3)):
+            if hp.Boolean("dropout_active"):
+                x = layers.Dropout(rate=hp_dropout_rate)(x)
             x = layers.Dense(units=hp.Int(f"units_{i}", min_value=32, max_value=512, step=32), 
                              activation=None)(x)
             if hp.Boolean("batchnorm"):

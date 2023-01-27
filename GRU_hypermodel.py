@@ -19,10 +19,9 @@ class GRUHyperModel(kt.HyperModel):
         x = layers.Bidirectional(layers.GRU(units=hp_gru_units, return_sequences=True))(x)
         x = layers.GlobalAveragePooling1D()(x)
 
-        if hp.Boolean("dropout_active"):
-            x = layers.Dropout(rate=hp_dropout_rate)(x)
-
         for i in range(hp.Int("num_layers", 0, 3)):
+            if hp.Boolean("dropout_active"):
+                x = layers.Dropout(rate=hp_dropout_rate)(x)
             x = layers.Dense(units=hp.Int(f"units_{i}", min_value=32, max_value=512, step=32), 
                              activation=None)(x)
             if hp.Boolean("batchnorm"):
