@@ -15,7 +15,8 @@ class GRUHyperModel(kt.HyperModel):
         hp_activation = hp.Choice('activation_linear_layer', values=["relu", "sigmoid"])
         hp_gru_units = hp.Int('gru_units', min_value=32, max_value=256, step=32)
 
-        x = layers.Bidirectional(layers.GRU(units=hp_gru_units, return_sequences=True))(inputs)
+        x = tf.keras.layers.Masking(mask_value=0.)(inputs)
+        x = layers.Bidirectional(layers.GRU(units=hp_gru_units, return_sequences=True))(x)
         x = layers.GlobalAveragePooling1D()(x)
 
         if hp.Boolean("dropout_active"):
