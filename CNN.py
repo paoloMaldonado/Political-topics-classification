@@ -3,12 +3,15 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 import keras_tuner as kt
 from CNN_hypermodel import ConvHyperModel, SimpleConvHyperModel
+from GRU_hypermodel import GRUHyperModel
 
 def instanciateHypermodel(hypermodel):
     if hypermodel == "cnn":
         return ConvHyperModel()
     elif hypermodel == "simple_cnn":
         return SimpleConvHyperModel()
+    elif hypermodel == "gru":
+        return GRUHyperModel()
     return
 
 
@@ -85,10 +88,14 @@ class AutoCNN:
                 print("Number of convolutional layers:", best_hps.get('num_conv_layers'))
             if self.hypermodel == "simple_cnn":
                 print("Kernel size:", best_hps.get('kernel_size'))
-            print("Number of filters:", best_hps.get('filters'))
-            print("Dropout:", best_hps.get('dropout'))
-            print("Number of linear layers:", best_hps.get('num_layers'))
+            if self.hypermodel == "cnn" or self.hypermodel == "simple_cnn":
+                print("Number of filters:", best_hps.get('filters'))
+            if self.hypermodel == "gru":
+                print("GRU units:", best_hps.get('gru_units'))
+                
             print("Dropout:", best_hps.get('dropout_active'))
+            print("Dropout rate:", best_hps.get('dropout'))
+            print("Number of linear layers:", best_hps.get('num_layers'))
 
             for i in range(best_hps.get('num_layers')):
                 print(f"Dense_{i+1}:", best_hps.get(f"units_{i}"))
