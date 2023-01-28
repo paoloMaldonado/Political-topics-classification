@@ -10,7 +10,7 @@ class ConvHyperModel(kt.HyperModel):
         inputs = tf.keras.Input(shape=input_shape)
 
         # parameters tuning
-        hp_dropout_rate = hp.Choice('dropout', values=[0.15, 0.25, 0.5, 0.75, 0.8])
+        hp_dropout_rate = hp.Choice('dropout', values=[0.0, 0.15, 0.25, 0.5, 0.75, 0.8])
         hp_learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4, 1e-5])
         hp_filters = hp.Choice('filters', values=[10, 50, 100, 150])
         hp_activation = hp.Choice('activation_linear_layer', values=["relu", "sigmoid"])
@@ -29,8 +29,7 @@ class ConvHyperModel(kt.HyperModel):
         x = layers.Flatten()(x)
 
         for i in range(hp.Int("num_layers", 0, 3)):
-            if hp.Boolean("dropout_active"):
-                x = layers.Dropout(rate=hp_dropout_rate)(x)
+            x = layers.Dropout(rate=hp_dropout_rate)(x)
             x = layers.Dense(units=hp.Int(f"units_{i}", min_value=32, max_value=512, step=32), 
                              activation=None)(x)
             if hp.Boolean("batchnorm"):
@@ -38,8 +37,7 @@ class ConvHyperModel(kt.HyperModel):
             x = layers.Activation(activation=hp_activation)(x)
 
         # Final Fully Connected
-        if hp.Boolean("dropout_active"):
-            x = layers.Dropout(rate=hp_dropout_rate)(x)
+        x = layers.Dropout(rate=hp_dropout_rate)(x)
         x = layers.Dense(5, activation=None)(x)
         if hp.Boolean("batchnorm"):
             x = layers.BatchNormalization()(x)
@@ -70,7 +68,7 @@ class SimpleConvHyperModel(kt.HyperModel):
         inputs = tf.keras.Input(shape=input_shape)
 
         # parameters tuning
-        hp_dropout_rate = hp.Choice('dropout', values=[0.15, 0.25, 0.5, 0.75, 0.8])
+        hp_dropout_rate = hp.Choice('dropout', values=[0.0, 0.15, 0.25, 0.5, 0.75, 0.8])
         hp_learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4, 1e-5])
         hp_filters = hp.Choice('filters', values=[10, 50, 100, 150])
         hp_activation = hp.Choice('activation_linear_layer', values=["relu", "sigmoid"])
@@ -85,8 +83,7 @@ class SimpleConvHyperModel(kt.HyperModel):
         x = layers.Flatten()(x)
 
         for i in range(hp.Int("num_layers", 0, 3)):
-            if hp.Boolean("dropout_active"):
-                x = layers.Dropout(rate=hp_dropout_rate)(x)
+            x = layers.Dropout(rate=hp_dropout_rate)(x)
             x = layers.Dense(units=hp.Int(f"units_{i}", min_value=32, max_value=512, step=32), 
                              activation=None)(x)
             if hp.Boolean("batchnorm"):
@@ -94,8 +91,7 @@ class SimpleConvHyperModel(kt.HyperModel):
             x = layers.Activation(activation=hp_activation)(x)
 
         # Final Fully Connected
-        if hp.Boolean("dropout_active"):
-            x = layers.Dropout(rate=hp_dropout_rate)(x)
+        x = layers.Dropout(rate=hp_dropout_rate)(x)
         x = layers.Dense(5, activation=None)(x)
         if hp.Boolean("batchnorm"):
             x = layers.BatchNormalization()(x)

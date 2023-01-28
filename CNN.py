@@ -93,7 +93,6 @@ class AutoCNN:
             if self.hypermodel == "gru":
                 print("GRU units:", best_hps.get('gru_units'))
                 
-            print("Dropout:", best_hps.get('dropout_active'))
             print("Dropout rate:", best_hps.get('dropout'))
             print("Number of linear layers:", best_hps.get('num_layers'))
 
