@@ -76,7 +76,7 @@ class AutoCNN:
         if not refit:
             return 
 
-        tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="../logs")
+        tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=kwargs['log_dir'])
 
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
@@ -125,11 +125,10 @@ class AutoCNN:
 
     def fit(self, X, y, epochs, validation_split=0.0):
         best_hps = self.get_best_hyperparamenters(0)
-        tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="../logs")
 
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
-        model.fit(X, y, batch_size=best_hps.get('batch_size'), epochs=epochs, validation_split=validation_split, callbacks=[tensorboard_callback])
+        model.fit(X, y, batch_size=best_hps.get('batch_size'), epochs=epochs, validation_split=validation_split)
         self.model = model
         return model
     
