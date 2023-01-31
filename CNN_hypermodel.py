@@ -6,7 +6,7 @@ import keras_tuner as kt
 
 class ConvHyperModel(kt.HyperModel):
     def build(self, hp):
-        input_shape = (80, 100) #change
+        input_shape = (40, 100) #change
         inputs = tf.keras.Input(shape=input_shape)
 
         # parameters tuning
@@ -64,7 +64,7 @@ class ConvHyperModel(kt.HyperModel):
 
 class SimpleConvHyperModel(kt.HyperModel):
     def build(self, hp):
-        input_shape = (80, 100) #change
+        input_shape = (40, 100) #change
         inputs = tf.keras.Input(shape=input_shape)
 
         # parameters tuning
