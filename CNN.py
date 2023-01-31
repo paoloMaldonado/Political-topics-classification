@@ -128,7 +128,7 @@ class AutoCNN:
 
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
-        model.fit(X, y, batch_size=best_hps.get('batch_size'), epochs=epochs, validation_split=validation_split)
+        model.fit(X, y, batch_size=best_hps.get('batch_size'), epochs=epochs, validation_split=validation_split, callbacks=[tensorboard_callback])
         self.model = model
         return model
     
