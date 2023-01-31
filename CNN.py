@@ -125,6 +125,7 @@ class AutoCNN:
 
     def fit(self, X, y, epochs, validation_split=0.0):
         best_hps = self.get_best_hyperparamenters(0)
+        tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="../logs")
 
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
