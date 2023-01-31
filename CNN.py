@@ -65,7 +65,7 @@ class AutoCNN:
 
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
-        history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, callbacks=[tensorboard_callback, stop_early])   
+        history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, callbacks=[tensorboard_callback])   
 
         # val_per_epoch = history.history[objective]
         # if objective == "val_loss":
