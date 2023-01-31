@@ -3,6 +3,9 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 import keras_tuner as kt
 from CNN_hypermodel import ConvHyperModel, SimpleConvHyperModel
+from CNN_hypermodel60 import ConvHyperModel60, SimpleConvHyperModel60
+from CNN_hypermodel40 import ConvHyperModel40, SimpleConvHyperModel40
+from CNN_hypermodel30 import ConvHyperModel30, SimpleConvHyperModel30
 from GRU_hypermodel import GRUHyperModel
 
 def instanciateHypermodel(hypermodel):
@@ -10,6 +13,18 @@ def instanciateHypermodel(hypermodel):
         return ConvHyperModel()
     elif hypermodel == "simple_cnn":
         return SimpleConvHyperModel()
+    elif hypermodel == "cnn_60":
+        return ConvHyperModel60()
+    elif hypermodel == "cnn_40":
+        return ConvHyperModel40()
+    elif hypermodel == "cnn_30":
+        return ConvHyperModel30()
+    elif hypermodel == "simple_cnn_60":
+        return SimpleConvHyperModel60()
+    elif hypermodel == "simple_cnn_40":
+        return SimpleConvHyperModel40()
+    elif hypermodel == "simple_cnn_30":
+        return SimpleConvHyperModel30()
     elif hypermodel == "gru":
         return GRUHyperModel()
     return
