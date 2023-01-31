@@ -43,8 +43,8 @@ class AutoCNN:
 
         tuner = kt.Hyperband(instanciateHypermodel(self.hypermodel),
                             objective=objective_list,
-                            max_epochs=50,
-                            hyperband_iterations=3,
+                            max_epochs=100,
+                            hyperband_iterations=2,
                             directory=kwargs['directory'],
                             project_name=kwargs['project_name'],
                             overwrite=True,
@@ -53,7 +53,7 @@ class AutoCNN:
 
         self.tuner = tuner
         stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
-        tuner.search(X, y, epochs=epochs, validation_split=validation_split, callbacks=[stop_early])
+        tuner.search(X, y, validation_split=validation_split, callbacks=[stop_early])
         
         best_hps = self.get_best_hyperparamenters()
 
@@ -65,7 +65,7 @@ class AutoCNN:
 
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
-        history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=100, validation_split=validation_split, callbacks=[tensorboard_callback])   
+        history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, callbacks=[tensorboard_callback])   
 
         # val_per_epoch = history.history[objective]
         # if objective == "val_loss":
