@@ -58,7 +58,7 @@ class AutoCNN:
 
         tuner = kt.Hyperband(instanciateHypermodel(self.hypermodel),
                             objective=objective_list,
-                            max_epochs=100,
+                            max_epochs=50,
                             hyperband_iterations=2,
                             directory=kwargs['directory'],
                             project_name=kwargs['project_name'],
