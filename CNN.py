@@ -3,7 +3,10 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 import keras_tuner as kt
 from CNN_hypermodel import ConvHyperModel, SimpleConvHyperModel
+from CNN_hypermodel70 import ConvHyperModel70, SimpleConvHyperModel70
+from CNN_hypermodel65 import ConvHyperModel65, SimpleConvHyperModel65
 from CNN_hypermodel60 import ConvHyperModel60, SimpleConvHyperModel60
+from CNN_hypermodel50 import ConvHyperModel50, SimpleConvHyperModel50
 from CNN_hypermodel40 import ConvHyperModel40, SimpleConvHyperModel40
 from CNN_hypermodel30 import ConvHyperModel30, SimpleConvHyperModel30
 from GRU_hypermodel import GRUHyperModel
