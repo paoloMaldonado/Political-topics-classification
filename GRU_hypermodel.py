@@ -6,7 +6,7 @@ import keras_tuner as kt
 
 class GRUHyperModel(kt.HyperModel):
     def build(self, hp):
-        input_shape = (80, 100) #change
+        input_shape = (60, 100) #change
         inputs = tf.keras.Input(shape=input_shape)
 
         # parameters tuning
