@@ -114,11 +114,11 @@ class AutoCNN:
         if verbose == 1:
             print("Hyperparameters")
             print("*"*10)
-            if self.hypermodel == "cnn":
+            if self.hypermodel.startswith("cnn"):
                 print("Number of convolutional layers:", best_hps.get('num_conv_layers'))
-            if self.hypermodel == "simple_cnn":
+            if self.hypermodel.startswith("simple_cnn"):
                 print("Kernel size:", best_hps.get('kernel_size'))
-            if self.hypermodel == "cnn" or self.hypermodel == "simple_cnn":
+            if self.hypermodel.startswith("cnn") or self.hypermodel.startswith("simple_cnn"):
                 print("Number of filters:", best_hps.get('filters'))
             if self.hypermodel == "gru":
                 print("GRU units:", best_hps.get('gru_units'))
