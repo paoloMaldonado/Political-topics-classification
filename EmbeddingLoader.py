@@ -8,7 +8,7 @@ class EmbeddingLoader:
         self.embedding_object = None
     def load_embedding_model(self):
         if self.embedding_name == "word2vec":
-            self.embedding_object = KeyedVectors.load_word2vec_format(self.embedding_path+"/word2vec/SBW-vectors-300-min5-cbow.bin", binary=True)
+            self.embedding_object = KeyedVectors.load(self.embedding_path, binary=True)
         elif self.embedding_name == "fasttext":
             self.embedding_object = load_facebook_vectors(self.embedding_path+"/fasttext/fasttext_model_100_ft.bin")
         else:
