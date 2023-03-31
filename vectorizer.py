@@ -25,6 +25,7 @@ class SentenceEmbeddingVectorizer(BaseEstimator, TransformerMixin):
         if self.embedding_name == 'word2vec':
             # generate oov vectors
             oov_words_list = checkOOVwords(list(self.vocabulary), self.embedding)
+            print("aaaa")
             self.oov_to_vector = createRandomOOV(oov_words_list)
         return self
     
