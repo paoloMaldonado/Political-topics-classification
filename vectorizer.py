@@ -24,13 +24,14 @@ class SentenceEmbeddingVectorizer(BaseEstimator, TransformerMixin):
 
         if self.embedding_name == 'word2vec':
             # generate oov vectors
+            print("Checking for OOV words")
             oov_words_list = checkOOVwords(list(self.vocabulary), self.embedding)
-            print("aaaa")
             self.oov_to_vector = createRandomOOV(oov_words_list)
         return self
     
     def transform(self, X, y=None):
         # generate sentence embedding matrix
+        print("Generating embedding vectors")
         if self.use_tfidf_weights:
             bow_array = self.bow_vectorizer.transform(X)
             return wcbow(X, self.vocabulary, bow_array.toarray(), self.embedding, self.oov_to_vector, self.norm)
