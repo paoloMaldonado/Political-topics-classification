@@ -2,7 +2,7 @@ import string
 exclude = set(string.punctuation)
 
 def removePunctuation(token_list):
-    return [token for token in token_list if token not in exclude]
+    return [token for token in token_list if token not in exclude and token != '[NO_PREV]']
 
 def replaceNumbers(token_list):
     s = []
@@ -19,3 +19,6 @@ def isNumber(s):
         return True
     except ValueError:
         return False
+
+def joinPhrases(prev, current):
+    return prev + ' ' + current
