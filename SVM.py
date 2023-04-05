@@ -98,7 +98,8 @@ class SVM_Model:
                 objs = [("embedding", SentenceEmbeddingVectorizer(embedding=self.embedding,
                                                                   embedding_name=self.text_vectorization,
                                                                   use_tfidf_weights=kwargs['use_tfidf_weights'],
-                                                                  norm=kwargs['norm'])),
+                                                                  norm=kwargs['norm'],
+                                                                  additional_features=kwargs['additional_features'])),
                         ("svm", SVC(C=kwargs['C'],
                                     gamma=kwargs['gamma'],
                                     kernel=kwargs['kernel']))]
