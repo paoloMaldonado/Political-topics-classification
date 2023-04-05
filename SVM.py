@@ -56,9 +56,10 @@ class SVM_Model:
 
 
     def fit(self, X, y, fine_tune=True, **kwargs):
-        if kwargs['additional_features'] != None:
+        if kwargs['additional_features']:
             Feature_adder = ("featureAdder", FeatureAdder(additional_features=kwargs['additional_features']))
         else:
+            print("passing through")
             Feature_adder = ("featureAdder", 'passthrough')
 
         if self.text_vectorization == 'tfidf' and fine_tune == False:
