@@ -133,6 +133,6 @@ class SVM_Model:
         else:
             print("Error")
 
-    def predict(self, X, additional_features=None):
-        return self.model.predict(X, additional_features)
+    def predict(self, X):
+        return self.model.predict(X)
 
