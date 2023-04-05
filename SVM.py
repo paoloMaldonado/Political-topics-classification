@@ -8,6 +8,7 @@ from utils.utils_tfidf import identity_tokenizer
 from vectorizer import SentenceEmbeddingVectorizer
 from gensim.models import KeyedVectors
 from EmbeddingLoader import EmbeddingLoader
+from FeatureAdder import FeatureAdder
 
 class SVM_Model:
     def __init__(self, text_vectorization, embedding_path):
@@ -55,10 +56,16 @@ class SVM_Model:
 
 
     def fit(self, X, y, fine_tune=True, **kwargs):
+        if kwargs['additional_features'] != None:
+            Feature_adder = ("featureAdder", FeatureAdder(additional_features=kwargs['additional_features']))
+        else:
+            Feature_adder = ("featureAdder", 'passthrough')
+
         if self.text_vectorization == 'tfidf' and fine_tune == False:
             if len(kwargs) == 0:
                 print("Training SVM + {} model with default parameters".format(self.text_vectorization))
                 objs = [("tfidf", TfidfVectorizer(tokenizer=identity_tokenizer, lowercase=False)),
+                        Feature_adder,
                         ("svm", SVC(kernel="rbf"))]
             else:
                 print("Training SVM + {} model with custom parameters".format(self.text_vectorization))
@@ -67,6 +74,7 @@ class SVM_Model:
                                                   min_df=kwargs['min_df'], 
                                                   max_df=kwargs['max_df'],
                                                   use_idf=kwargs['use_idf'])),
+                        Feature_adder,
                         ("svm", SVC(C=kwargs['C'],
                                     gamma=kwargs['gamma'],
                                     kernel=kwargs['kernel']))]
@@ -92,14 +100,15 @@ class SVM_Model:
             if len(kwargs) == 0:
                 print("Training SVM + {} model with default parameters".format(self.text_vectorization))
                 objs = [("embedding", SentenceEmbeddingVectorizer(self.embedding, self.text_vectorization)),
+                        Feature_adder,
                         ("svm", SVC(kernel="rbf"))]
             else:
                 print("Training SVM + {} model with custom parameters".format(self.text_vectorization))
                 objs = [("embedding", SentenceEmbeddingVectorizer(embedding=self.embedding,
                                                                   embedding_name=self.text_vectorization,
                                                                   use_tfidf_weights=kwargs['use_tfidf_weights'],
-                                                                  norm=kwargs['norm'],
-                                                                  additional_features=kwargs['additional_features'])),
+                                                                  norm=kwargs['norm'])),
+                        Feature_adder, 
                         ("svm", SVC(C=kwargs['C'],
                                     gamma=kwargs['gamma'],
                                     kernel=kwargs['kernel']))]
@@ -123,6 +132,6 @@ class SVM_Model:
         else:
             print("Error")
 
-    def predict(self, X):
-        return self.model.predict(X)
+    def predict(self, X, additional_features=None):
+        return self.model.predict(X, additional_features)
 
