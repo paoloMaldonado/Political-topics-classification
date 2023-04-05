@@ -56,7 +56,7 @@ class SVM_Model:
 
 
     def fit(self, X, y, fine_tune=True, **kwargs):
-        if kwargs['additional_features']:
+        if 'additional_features' in kwargs:
             Feature_adder = ("featureAdder", FeatureAdder(additional_features=kwargs['additional_features']))
         else:
             print("passing through")
