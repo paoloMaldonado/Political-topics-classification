@@ -1,20 +1,23 @@
 import numpy as np
 
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import SVC
 from sklearn.pipeline import Pipeline
+from sklearn.pipeline import FeatureUnion
 from sklearn.model_selection import GridSearchCV
 from utils.utils_tfidf import identity_tokenizer
 from vectorizer import SentenceEmbeddingVectorizer
 from gensim.models import KeyedVectors
 from EmbeddingLoader import EmbeddingLoader
-from FeatureAdder import FeatureAdder
+from ColumnExtractor import ColumnExtractor
 
 class SVM_Model:
-    def __init__(self, text_vectorization, embedding_path):
+    def __init__(self, text_vectorization, embedding_path, additional_features=False):
         self.text_vectorization = text_vectorization
         self.model = None
         self.embedding_path = embedding_path
+        self.additional_features = additional_features
         if text_vectorization != "tfidf":
             embLoad = EmbeddingLoader(self.text_vectorization, self.embedding_path).load_embedding_model()
             self.embedding = embLoad.embedding_object
@@ -56,26 +59,39 @@ class SVM_Model:
 
 
     def fit(self, X, y, fine_tune=True, **kwargs):
-        if 'additional_features' in kwargs:
-            Feature_adder = ("featureAdder", FeatureAdder(additional_features=kwargs['additional_features']))
+        if self.additional_features:
+            print("Setting additional features: Political Parties")
+            Add_political_party = Pipeline([
+                                    ("extract_party", ColumnExtractor(column_to_extract='party')),
+                                    ("encoding", OneHotEncoder(sparse_output=False))
+                                  ])
         else:
-            print("passing through")
-            Feature_adder = ("featureAdder", 'passthrough')
+            Add_political_party = 'drop'
 
         if self.text_vectorization == 'tfidf' and fine_tune == False:
             if len(kwargs) == 0:
                 print("Training SVM + {} model with default parameters".format(self.text_vectorization))
-                objs = [("tfidf", TfidfVectorizer(tokenizer=identity_tokenizer, lowercase=False)),
-                        Feature_adder,
+                objs = [("features", FeatureUnion([
+                            ("sentence_tfidf", Pipeline([
+                                ("extract_phrase", ColumnExtractor(column_to_extract='phrase')),
+                                ("tfidf", TfidfVectorizer(tokenizer=identity_tokenizer, lowercase=False))
+                                ])),
+                            ("party_encoding", Add_political_party)
+                        ])),
                         ("svm", SVC(kernel="rbf"))]
             else:
                 print("Training SVM + {} model with custom parameters".format(self.text_vectorization))
-                objs = [("tfidf", TfidfVectorizer(tokenizer=identity_tokenizer, 
-                                                  lowercase=False, 
-                                                  min_df=kwargs['min_df'], 
-                                                  max_df=kwargs['max_df'],
-                                                  use_idf=kwargs['use_idf'])),
-                        Feature_adder,
+                objs = [("features", FeatureUnion([
+                            ("sentence_tfidf", Pipeline([
+                                ("extract_phrase", ColumnExtractor(column_to_extract='phrase')),
+                                ("tfidf", TfidfVectorizer(tokenizer=identity_tokenizer, 
+                                                          lowercase=False, 
+                                                          min_df=kwargs['min_df'], 
+                                                          max_df=kwargs['max_df'],
+                                                          use_idf=kwargs['use_idf']))
+                            ])),
+                            ("party_encoding", Add_political_party)
+                        ])),
                         ("svm", SVC(C=kwargs['C'],
                                     gamma=kwargs['gamma'],
                                     kernel=kwargs['kernel']))]
@@ -100,19 +116,29 @@ class SVM_Model:
         elif self.text_vectorization != 'tfidf' and fine_tune == False:
             if len(kwargs) == 0:
                 print("Training SVM + {} model with default parameters".format(self.text_vectorization))
-                objs = [("embedding", SentenceEmbeddingVectorizer(self.embedding, self.text_vectorization)),
-                        Feature_adder,
+                objs = [("features", FeatureUnion([
+                            ("sentence_embedding", Pipeline([
+                                ("extract_phrase", ColumnExtractor(column_to_extract='phrase')),
+                                ("embedding", SentenceEmbeddingVectorizer(self.embedding, self.text_vectorization))
+                                ])),
+                            ("party_encoding", Add_political_party)
+                        ])),
                         ("svm", SVC(kernel="rbf"))]
             else:
                 print("Training SVM + {} model with custom parameters".format(self.text_vectorization))
-                objs = [("embedding", SentenceEmbeddingVectorizer(embedding=self.embedding,
-                                                                  embedding_name=self.text_vectorization,
-                                                                  use_tfidf_weights=kwargs['use_tfidf_weights'],
-                                                                  norm=kwargs['norm'])),
-                        Feature_adder, 
+                objs = [("features", FeatureUnion([
+                            ("sentence_embedding", Pipeline([
+                                ("extract_phrase", ColumnExtractor(column_to_extract='phrase')),
+                                ("embedding", SentenceEmbeddingVectorizer(embedding=self.embedding,
+                                                                          embedding_name=self.text_vectorization,
+                                                                          use_tfidf_weights=kwargs['use_tfidf_weights'],
+                                                                          norm=kwargs['norm']))
+                                ])),
+                            ("party_encoding", Add_political_party)
+                        ])),
                         ("svm", SVC(C=kwargs['C'],
                                     gamma=kwargs['gamma'],
-                                    kernel=kwargs['kernel']))]
+                                    kernel=kwargs['kernel']))] 
             pipe = Pipeline(objs)
             self.model = pipe.fit(X, y)
             print("Training complete")

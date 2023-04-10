@@ -8,37 +8,34 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from vectorizer import SentenceEmbeddingVectorizer
 
-# laod data
-data = pd.read_pickle('../recollected data analysis/training data analysis/clean_full_dataset')
+from utils.misc import removePunctuation, replaceNumbers, joinPhrases
+
+from nltk.tokenize import word_tokenize
+import nltk
+nltk.download('punkt')
+
+# load data
+data = pd.read_pickle('dataset/manifesto_hispano_corpus.df')
+data = data.head(10)
 
 # label preprocessing
 le = preprocessing.LabelEncoder()
-le.fit(data.G3.to_list())
+le.fit(data.domain_name.values)
 
 # create train/test split 
-y = le.transform(data.G3.to_list())
-X = data.tweet_clean.to_list()
+y = le.transform(data.domain_name.values).tolist()
+X = {}
+X['phrase'] = joinPhrases(data.prev_text.values, data.text.values)
+X['party'] = data.partyname.values
+# tokenize the sentences first
+X['phrase'] = [replaceNumbers(removePunctuation(word_tokenize(sentence.lower(), language='spanish'))) for sentence in X['phrase']]
+X = pd.DataFrame.from_dict(X)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2023)
 
-# # instantiate the SVM model
-# model = SVM_Model(text_vectorization='tfidf')
-# model.fit(X_train, y_train, fine_tune=True)
-# y_pred = model.predict(X_test)
-
-# print("test accuracy using best parameter values:", accuracy_score(y_test, y_pred))
-# print("f1 macro using best parameter values:", f1_score(y_test, y_pred, average='macro'))
-# print("f1 micro using best parameter values:", f1_score(y_test, y_pred, average='micro'))
-
 # instantiate the SVM model with embeddings
-model = SVM_Model(text_vectorization='word2vec', embedding_path="../embeddings")
-model.fit(X_train, y_train, fine_tune=True)
+model = SVM_Model(text_vectorization='tfidf', embedding_path="../embeddings", additional_features=True)
+model.fit(X_train, y_train, fine_tune=False, min_df=1, max_df=0.5, use_idf=True, C=1.0, gamma='scale', kernel='rbf')
 y_pred = model.predict(X_test)
-
-print("test data results")
-print("-"*10)
-print("test accuracy using best parameter values: {:0.4f}".format(accuracy_score(y_test, y_pred)))
-print("f1 macro using best parameter values: {:0.4f}".format(f1_score(y_test, y_pred, average='macro')))
-print("f1 micro using best parameter values: {:0.4f}".format(f1_score(y_test, y_pred, average='micro')))
 
 
 
