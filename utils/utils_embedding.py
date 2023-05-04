@@ -1,22 +1,40 @@
 from utils.utils_tfidf import getTFIDFtokenSentenceWeight
+from collections import Counter
 import numpy as np
 
-def checkOOVwords(vocabulary, embedding, verbose=0):
-    oov_counter = 0
-    oov_words = []
-    if verbose == 1:
-        print("OOV words:")
-        print("-"*5)
-    for word in vocabulary:
-        try:
-            embedding.get_vector(word)
-        except KeyError:
-            if verbose == 1:
-                print(word)
-            oov_words.append(word)
-            oov_counter+=1
-    #print("Number of OOV words:", oov_counter)
-    return oov_words
+# def checkOOVwords(vocabulary, embedding, verbose=0):
+#     oov_counter = 0
+#     oov_words = []
+#     if verbose == 1:
+#         print("OOV words:")
+#         print("-"*5)
+#     for word in vocabulary:
+#         try:
+#             embedding.get_vector(word)
+#         except KeyError:
+#             if verbose == 1:
+#                 print(word)
+#             oov_words.append(word)
+#             oov_counter+=1
+#     #print("Number of OOV words:", oov_counter)
+#     return oov_words
+
+def checkOOVwords(phrases, embedding, verbose=0):
+    # Creating the vocabulary
+    all_words = []
+    for sentence in phrases:
+        all_words.extend(sentence)
+    counter = Counter(all_words)
+    vocabulary = list(counter.keys())
+
+    # Create list of oov words
+    oov_words = 0
+    for w in vocabulary:
+        if w not in embedding.key_to_index:
+            oov_words+=1
+
+    print('Number of OOV words {}'.format(oov_words))
+    print('They represent {0:.2f}% of all the vocabulary of words'.format(oov_words/len(vocabulary)*100))
 
 def createRandomOOV(oov_words, embedding_shape=(300,)):
     oov_to_vector = {}
