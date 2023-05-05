@@ -51,7 +51,7 @@ class AutoCNN:
         self.model = None
         self.hypermodel = hypermodel
 
-    def fit_and_tune(self, X, y=None, epochs=50, validation_split=0.2, validation_data=None, objective=["val_categorical_accuracy"], n_trials=100, refit=True, **kwargs):        
+    def fit_and_tune(self, X, y=None, epochs=50, validation_split=0.2, validation_data=None, objective=["val_categorical_accuracy"], factor=3, n_trials=100, refit=True, **kwargs):        
         objective_list = []
 
         if "val_categorical_accuracy" in objective:
@@ -73,7 +73,8 @@ class AutoCNN:
 
         tuner = kt.Hyperband(instanciateHypermodel(self.hypermodel),
                             objective=objective_list,
-                            max_epochs=100,
+                            max_epochs=50,
+                            factor=factor,
                             hyperband_iterations=1,
                             directory=kwargs['directory'],
                             project_name=kwargs['project_name'],
