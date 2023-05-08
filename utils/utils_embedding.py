@@ -28,13 +28,15 @@ def checkOOVwords(phrases, embedding, verbose=0):
     vocabulary = list(counter.keys())
 
     # Create list of oov words
-    oov_words = 0
+    oov_words = []
     for w in vocabulary:
         if w not in embedding.key_to_index:
-            oov_words+=1
+            oov_words.append(w)
 
-    print('Number of OOV words {}'.format(oov_words))
-    print('They represent {0:.2f}% of all the vocabulary of words'.format(oov_words/len(vocabulary)*100))
+    print('Number of OOV words {}'.format(len(oov_words)))
+    print('They represent {0:.2f}% of all the vocabulary of words'.format(len(oov_words)/len(vocabulary)*100))
+
+    return oov_words
 
 def createRandomOOV(oov_words, embedding_shape=(300,)):
     oov_to_vector = {}
