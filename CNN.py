@@ -51,7 +51,7 @@ class AutoCNN:
         self.model = None
         self.hypermodel = hypermodel
 
-    def fit_and_tune(self, X, y=None, epochs=50, validation_split=0.2, validation_data=None, objective=["val_categorical_accuracy"], factor=3, n_trials=100, refit=True, **kwargs):        
+    def fit_and_tune(self, X, y=None, epochs=50, validation_split=0.2, validation_data=None, objective=["val_categorical_accuracy"], factor=3, n_trials=100, refit=True, overwrite=True, **kwargs):        
         objective_list = []
 
         if "val_categorical_accuracy" in objective:
@@ -78,7 +78,7 @@ class AutoCNN:
                             hyperband_iterations=1,
                             directory=kwargs['directory'],
                             project_name=kwargs['project_name'],
-                            overwrite=True,
+                            overwrite=overwrite,
                             seed=2023)
 
 
@@ -98,12 +98,12 @@ class AutoCNN:
         model = hypermodel.build(best_hps)
         history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, validation_data=validation_data, callbacks=[tensorboard_callback, stop_early])   
 
-        val_per_epoch = history.history[objective]
-        if objective == "val_loss":
-            best_epoch = val_per_epoch.index(min(val_per_epoch)) + 1
-        best_epoch = val_per_epoch.index(max(val_per_epoch)) + 1
-        print("*"*10)
-        print('Best epoch: '.format(best_epoch))
+        # val_per_epoch = history.history[objective]
+        # if objective == "val_loss":
+        #     best_epoch = val_per_epoch.index(min(val_per_epoch)) + 1
+        # best_epoch = val_per_epoch.index(max(val_per_epoch)) + 1
+        # print("*"*10)
+        # print('Best epoch: '.format(best_epoch))
 
     def get_best_hyperparameters(self, verbose=1):
         if self.tuner == None:
