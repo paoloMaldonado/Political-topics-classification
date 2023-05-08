@@ -142,7 +142,7 @@ class AutoCNN:
 
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
-        model.fit(best_hps, model, X, y, epochs=epochs, validation_split=validation_split, validation_data=validation_data)
+        model.fit(X, y, epochs=epochs, validation_split=validation_split, validation_data=validation_data)
         self.model = model
         return self.model
     
