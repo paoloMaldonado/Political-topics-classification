@@ -31,7 +31,8 @@ class GRUHyperModel(kt.HyperModel):
         mixed_layers.append(x)
 
         # Append the correspond political party
-        mixed_layers.append(party_in)
+        party = layers.Flatten()(party_in)
+        mixed_layers.append(party)
 
         x = layers.Concatenate()(mixed_layers)
         x = layers.Flatten()(x)
