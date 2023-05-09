@@ -30,6 +30,9 @@ class GRUHyperModel(kt.HyperModel):
         x = layers.GlobalAveragePooling1D()(x)
         mixed_layers.append(x)
 
+        # Append the correspond political party
+        mixed_layers.append(party_in)
+
         x = layers.Concatenate()(mixed_layers)
         x = layers.Flatten()(x)
 
