@@ -6,7 +6,7 @@ import keras_tuner as kt
 
 class GRUHyperModel(kt.HyperModel):
     def build(self, hp):
-        input_shape = (60, 100) #change
+        input_shape = (60, 300) #change
         prev_phrase_in = tf.keras.Input(shape=input_shape, name='prev_phrase')
         phrase_in      = tf.keras.Input(shape=input_shape, name='phrase')
         party_in       = tf.keras.Input(shape=(1, 78), name='party')
