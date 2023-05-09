@@ -14,32 +14,6 @@ from GRU_hypermodel import GRUHyperModel
 def instanciateHypermodel(hypermodel):
     if hypermodel == "cnn":
         return ConvHyperModel()
-    elif hypermodel == "simple_cnn":
-        return SimpleConvHyperModel()
-    # elif hypermodel == "cnn_70":
-    #     return ConvHyperModel70()
-    # elif hypermodel == "cnn_65":
-    #     return ConvHyperModel65()
-    # elif hypermodel == "cnn_60":
-    #     return ConvHyperModel60()
-    # elif hypermodel == "cnn_50":
-    #     return ConvHyperModel50()
-    # elif hypermodel == "cnn_40":
-    #     return ConvHyperModel40()
-    # elif hypermodel == "cnn_30":
-    #     return ConvHyperModel30()
-    # elif hypermodel == "simple_cnn_70":
-    #     return SimpleConvHyperModel70()
-    # elif hypermodel == "simple_cnn_65":
-    #     return SimpleConvHyperModel65()
-    # elif hypermodel == "simple_cnn_60":
-    #     return SimpleConvHyperModel60()
-    # elif hypermodel == "simple_cnn_50":
-    #     return SimpleConvHyperModel50()
-    # elif hypermodel == "simple_cnn_40":
-    #     return SimpleConvHyperModel40()
-    # elif hypermodel == "simple_cnn_30":
-    #     return SimpleConvHyperModel30()
     elif hypermodel == "gru":
         return GRUHyperModel()
     return
