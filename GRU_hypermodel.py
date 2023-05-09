@@ -19,16 +19,16 @@ class GRUHyperModel(kt.HyperModel):
         mixed_layers = []
 
         # for previous phrase
-        x = layers.Masking(mask_value=0.)(prev_phrase_in)
-        x = layers.Bidirectional(layers.GRU(units=hp_gru_units, return_sequences=True))(x)
-        x = layers.GlobalAveragePooling1D()(x)
-        mixed_layers.append(x)
+        x_prev = layers.Masking(mask_value=0.)(prev_phrase_in)
+        x_prev = layers.Bidirectional(layers.GRU(units=hp_gru_units, return_sequences=True))(x_prev)
+        x_prev = layers.GlobalAveragePooling1D()(x_prev)
+        mixed_layers.append(x_prev)
 
         # for current phrase
-        x = layers.Masking(mask_value=0.)(phrase_in)
-        x = layers.Bidirectional(layers.GRU(units=hp_gru_units, return_sequences=True))(x)
-        x = layers.GlobalAveragePooling1D()(x)
-        mixed_layers.append(x)
+        x_curr = layers.Masking(mask_value=0.)(phrase_in)
+        x_curr = layers.Bidirectional(layers.GRU(units=hp_gru_units, return_sequences=True))(x_curr)
+        x_curr = layers.GlobalAveragePooling1D()(x_curr)
+        mixed_layers.append(x_curr)
 
         # Append the correspond political party
         party = layers.Flatten()(party_in)
