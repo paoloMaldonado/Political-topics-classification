@@ -121,12 +121,19 @@ class AutoCNN:
 
         return best_hps
 
-    def fit(self, X, y=None, epochs=20, validation_split=0.0, validation_data=None):
+    def fit(self, X, y=None, epochs=20, validation_split=0.0, validation_data=None, checkpoint_path=None):
         best_hps = self.get_best_hyperparameters(0)
+
+        tf_callbacks = []
+        if checkpoint_path != None:
+            cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
+                                                             save_weights_only=True,
+                                                             verbose=1)
+            tf_callbacks.append(cp_callback)
 
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
-        model.fit(X, y, epochs=epochs, validation_split=validation_split, validation_data=validation_data)
+        model.fit(X, y, epochs=epochs, validation_split=validation_split, validation_data=validation_data, callbacks=tf_callbacks)
         self.model = model
         return self.model
     
