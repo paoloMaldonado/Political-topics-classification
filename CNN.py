@@ -25,7 +25,7 @@ class AutoCNN:
         self.model = None
         self.hypermodel = hypermodel
 
-    def fit_and_tune(self, X, y=None, epochs=50, validation_split=0.2, validation_data=None, objective=["val_categorical_accuracy"], factor=3, n_trials=100, refit=True, overwrite=True, **kwargs):        
+    def fit_and_tune(self, X, y=None, epochs=50, validation_split=0.2, validation_data=None, objective=["val_categorical_accuracy"], factor=3, n_trials=100, refit=True, overwrite=True, checkpoint_path=None, **kwargs):        
         objective_list = []
 
         if "val_categorical_accuracy" in objective:
@@ -66,11 +66,21 @@ class AutoCNN:
         if not refit:
             return 
 
+        tf_callbacks = []
+        if checkpoint_path != None:
+            cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
+                                                             save_weights_only=True,
+                                                             verbose=1)
+            tf_callbacks.append(cp_callback)
+
+
         tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=kwargs['log_dir'])
+        tf_callbacks.append(tensorboard_callback)
+        tf_callbacks.append(stop_early)
 
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
-        history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, validation_data=validation_data, callbacks=[tensorboard_callback, stop_early])   
+        history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, validation_data=validation_data, callbacks=tf_callbacks)   
 
         # val_per_epoch = history.history[objective]
         # if objective == "val_loss":
