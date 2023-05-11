@@ -20,8 +20,8 @@ class ConvHyperModel(kt.HyperModel):
         conv_pool_layers = []
         # Convolutions with previous phrase
         for i in range(hp_number_conv_layers):
-            conv = layers.Conv1D(filters=hp_filters, kernel_size=i+2)(prev_phrase_in)
-            conv = layers.BatchNormalization()(conv)
+            conv = layers.Conv1D(filters=hp_filters, kernel_size=i+2, name="prev_conv1D_"+str(i))(prev_phrase_in)
+            conv = layers.BatchNormalization(name="prev_batchnoram_"+str(i))(conv)
             conv = layers.Activation("relu")(conv)
             # max pooling
             conv_pool = layers.MaxPooling1D(pool_size=conv.shape[1], strides=1)(conv)
@@ -29,8 +29,8 @@ class ConvHyperModel(kt.HyperModel):
 
         # Convolutions with current phrase
         for i in range(hp_number_conv_layers):
-            conv = layers.Conv1D(filters=hp_filters, kernel_size=i+2)(phrase_in)
-            conv = layers.BatchNormalization()(conv)
+            conv = layers.Conv1D(filters=hp_filters, kernel_size=i+2, name="curr_conv1D_"+str(i))(phrase_in)
+            conv = layers.BatchNormalization(name="curr_batchnoram_"+str(i))(conv)
             conv = layers.Activation("relu")(conv)
             # max pooling
             conv_pool = layers.MaxPooling1D(pool_size=conv.shape[1], strides=1)(conv)
@@ -46,14 +46,14 @@ class ConvHyperModel(kt.HyperModel):
         for i in range(hp.Int("num_hidden_layers", 0, 1)):
             x = layers.Dropout(rate=hp_dropout_rate)(x)
             x = layers.Dense(units=hp.Int(f"units_{i}", min_value=64, max_value=128, step=32), 
-                             activation=None)(x)
+                             activation=None, name="hidden_dense")(x)
             if hp.Boolean("batchnorm_after_hidden_layer"):
-                x = layers.BatchNormalization()(x)
+                x = layers.BatchNormalization(name="batchnorm_after_hidden_layer")(x)
             x = layers.Activation(activation='sigmoid')(x)
 
         # Final Fully Connected
         x = layers.Dropout(rate=hp_dropout_rate)(x)
-        x = layers.Dense(7, activation=None)(x)
+        x = layers.Dense(7, activation=None, name="final_dense")(x)
         if hp.Boolean("relu_before_softmax"):
             x = layers.Activation("relu")(x)
 
