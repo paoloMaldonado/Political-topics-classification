@@ -81,7 +81,7 @@ class AutoCNN:
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
         history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, validation_data=validation_data, callbacks=tf_callbacks)   
-
+        self.model = model
         # val_per_epoch = history.history[objective]
         # if objective == "val_loss":
         #     best_epoch = val_per_epoch.index(min(val_per_epoch)) + 1
