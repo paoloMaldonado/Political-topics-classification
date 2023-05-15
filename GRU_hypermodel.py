@@ -20,13 +20,13 @@ class GRUHyperModel(kt.HyperModel):
 
         # for previous phrase
         x_prev = layers.Masking(mask_value=0.)(prev_phrase_in)
-        x_prev = layers.Bidirectional(layers.GRU(units=hp_gru_units, return_sequences=True, name="prev_biGRU"))(x_prev)
+        x_prev = layers.Bidirectional(layers.GRU(units=hp_gru_units, return_sequences=True, name="prev_gru"), name="prev_bidirectional")(x_prev)
         x_prev = layers.GlobalAveragePooling1D()(x_prev)
         mixed_layers.append(x_prev)
 
         # for current phrase
         x_curr = layers.Masking(mask_value=0.)(phrase_in)
-        x_curr = layers.Bidirectional(layers.GRU(units=hp_gru_units, return_sequences=True, name="curr_biGRU"))(x_curr)
+        x_curr = layers.Bidirectional(layers.GRU(units=hp_gru_units, return_sequences=True, name="curr_gru"), name="curr_bidirectional")(x_curr)
         x_curr = layers.GlobalAveragePooling1D()(x_curr)
         mixed_layers.append(x_curr)
 
