@@ -4,14 +4,18 @@ import tensorflow_addons as tfa
 from transformers import TFBertTokenizer, TFBertModel
 from official.nlp import optimization
 
-from BertClassifiers import BertClassifier
+from BertClassifiers import BertClassifier, BertClassifierForTwoPhrases, BertClassifierForTwoPhrasesParty
 
-def instanciateModel(model):
-    if model == "current_phrase_only":
-        return BertClassifier()
-    # elif model == "gru":
-    #     return GRUHyperModel()
-    return
+def __instanciateModel(mode, instance):
+    if mode == "single_phrase":
+        instance = BertClassifier()
+    elif mode == "double_phrase":
+        instance = BertClassifierForTwoPhrases()
+    elif mode == "double_phrase_plus_party":
+        instance = BertClassifierForTwoPhrasesParty()
+    elif mode == "custom":
+        return instance
+    return instance
 
 def createOptimizer(X, epochs=5):
     epochs = 5
@@ -27,15 +31,18 @@ def createOptimizer(X, epochs=5):
     return optimizer
 
 class AutoBert:
-    def __init__(self, bert_model, bert_tokenizer, mode='current_phrase_only'):
+    def __init__(self, bert_model, bert_tokenizer, mode='single_phrase', instance=None):
         self.bert_model = bert_model
         self.bert_tokenizer = bert_tokenizer
         self.mode = mode
         self.model = None
+        if mode == "custom" and instance == None:
+            raise Exception('When using mode=custom, a valid instance of a custom bert model is expected')
+        self.instance = instance
     
     def __build__(self):
-        model = instanciateModel(self.mode)
-        return model.build(bert_tokenizer=self.bert_tokenizer, bert_model=self.bert_model)
+        model_instance = __instanciateModel(self.mode, self.instance)
+        return model_instance.build(bert_tokenizer=self.bert_tokenizer, bert_model=self.bert_model)
         
     def fit(self, X, y=None, epochs=5, validation_split=0.2, validation_data=None, checkpoint_path=None, build_only=False, **kwargs):
         self.model = self.__build__()
