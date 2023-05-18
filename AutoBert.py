@@ -6,7 +6,7 @@ from official.nlp import optimization
 
 from BertClassifiers import BertClassifier, BertClassifierForTwoPhrases, BertClassifierForTwoPhrasesParty
 
-def __instanciateModel(mode, instance):
+def _instanciateModel(mode, instance):
     if mode == "single_phrase":
         instance = BertClassifier()
     elif mode == "double_phrase":
@@ -38,7 +38,7 @@ class AutoBert:
         
     
     def __build__(self):
-        model_instance = __instanciateModel(self.mode, self.instance)
+        model_instance = _instanciateModel(self.mode, self.instance)
         if model_instance == None:
             raise Exception('No model was instantiated, please specify a valid mode with either mode or instance arguments')
         return model_instance.build(bert_tokenizer=self.bert_tokenizer, bert_model=self.bert_model)
