@@ -35,7 +35,7 @@ class AutoBert:
     
     def __build__(self):
         model = instanciateModel(self.mode)
-        return model.build(self.bert_model, self.bert_tokenizer)
+        return model.build(bert_tokenizer=self.bert_tokenizer, bert_model=self.bert_model)
         
     def fit(self, X, y=None, epochs=5, validation_split=0.2, validation_data=None, checkpoint_path=None, build_only=False, **kwargs):
         self.model = self.__build__()
