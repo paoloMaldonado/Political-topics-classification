@@ -5,7 +5,6 @@ from transformers import TFBertTokenizer, TFBertModel
 from official.nlp import optimization
 
 from BertClassifiers import BertClassifier
-from utils.utils_bert import createTFDatasetFromPandas
 
 def instanciateModel(model):
     if model == "current_phrase_only":
@@ -36,7 +35,7 @@ class AutoBert:
     
     def __build__(self):
         model = instanciateModel(self.mode)
-        return model.build()
+        return model.build(self.bert_model, self.bert_tokenizer)
         
     def fit(self, X, y=None, epochs=5, validation_split=0.2, validation_data=None, checkpoint_path=None, build_only=False, **kwargs):
         self.model = self.__build__()

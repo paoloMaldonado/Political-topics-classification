@@ -6,7 +6,7 @@ class BertClassifier:
     def build(self, bert_tokenizer, bert_model):
         text_in = tf.keras.Input(shape=(), dtype=tf.string, name='text')
 
-        encoder_inputs = bert_tokenizer(text_in, padding="max_length", max_length=60, truncation=True)
+        encoder_inputs = bert_tokenizer(text_in, padding="longest", truncation=True)
         outputs = bert_model(encoder_inputs)
         x = outputs['pooler_output']
         x = tf.keras.layers.Dropout(0.5)(x)
