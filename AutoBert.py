@@ -13,8 +13,6 @@ def __instanciateModel(mode, instance):
         instance = BertClassifierForTwoPhrases()
     elif mode == "double_phrase_plus_party":
         instance = BertClassifierForTwoPhrasesParty()
-    elif mode == "custom":
-        return instance
     return instance
 
 def createOptimizer(X, epochs=5):
@@ -31,24 +29,22 @@ def createOptimizer(X, epochs=5):
     return optimizer
 
 class AutoBert:
-    def __init__(self, bert_model, bert_tokenizer, mode='single_phrase', instance=None):
+    def __init__(self, bert_model, bert_tokenizer, mode='', instance=None):
         self.bert_model = bert_model
         self.bert_tokenizer = bert_tokenizer
         self.mode = mode
-        self.model = None
-        if mode == "custom" and instance == None:
-            raise Exception('When using mode=custom, a valid instance of a custom bert model is expected')
         self.instance = instance
+        self.model = None
+        
     
     def __build__(self):
         model_instance = __instanciateModel(self.mode, self.instance)
+        if model_instance == None:
+            raise Exception('No model was instantiated, please specify a valid mode with either mode or instance arguments')
         return model_instance.build(bert_tokenizer=self.bert_tokenizer, bert_model=self.bert_model)
         
     def fit(self, X, y=None, epochs=5, validation_split=0.2, validation_data=None, checkpoint_path=None, build_only=False, **kwargs):
         self.model = self.__build__()
-        
-        if self.model == None:
-            raise Exception('No model was instantiated, please specify a valid mode')
 
         loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True),
         metrics = ['categorical_accuracy', tfa.metrics.F1Score(num_classes=7, average='macro', name='f1_score_macro')]
