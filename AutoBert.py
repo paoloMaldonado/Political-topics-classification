@@ -43,7 +43,7 @@ class AutoBert:
             raise Exception('No model was instantiated, please specify a valid mode with either mode or instance arguments')
         return model_instance.build(bert_tokenizer=self.bert_tokenizer, bert_model=self.bert_model)
         
-    def fit(self, X, y=None, epochs=5, validation_split=0.2, validation_data=None, checkpoint_path=None, build_only=False, **kwargs):
+    def fit(self, X, y=None, epochs=5, validation_split=0.2, validation_data=None, checkpoint_path=None, build_only=False, stop_early=True, **kwargs):
         self.model = self.__build__()
 
         loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True),
@@ -65,7 +65,10 @@ class AutoBert:
             tf_callbacks.append(cp_callback)
 
         tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=kwargs['log_dir'])
+        stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, mode='min')
         tf_callbacks.append(tensorboard_callback)
+        if stop_early:
+            tf_callbacks.append(stop_early)
 
         print('Training model with mode: {}'.format(self.mode))
         self.model.fit(x=X, validation_data=validation_data,
