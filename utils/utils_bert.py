@@ -36,18 +36,23 @@ def createTFDatasetFromPandas(dataset, test_size, validation_size, columns=['pre
     # Split dataset in train/test
     X_train, X_test, y_train, y_test = train_test_split(sentences_raw, target_raw, 
                                                         test_size=test_size, random_state=seed)
-    # With the training set already created, split it again in train/validation
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, 
-                                                      test_size=validation_size, random_state=seed)
+    if validation_size > 0.0:
+        # With the training set already created, split it again in train/validation
+        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, 
+                                                          test_size=validation_size, random_state=seed)
     # percentages
     print('Using {} examples for training'.format(X_train.shape[0]))
     if verbosity > 1:
         for c in class_names:
             print('\t{} : {}%'.format(c, getPercentagesPerClass(y_train, c)))
-    print('Using {} examples for validation'.format(X_val.shape[0]))
-    if verbosity > 1:
-        for c in class_names:
-            print('\t{} : {}%'.format(c, getPercentagesPerClass(y_val, c)))
+    
+    if validation_size > 0.0:
+        print('Using {} examples for validation'.format(X_val.shape[0]))
+        if verbosity > 1:
+            for c in class_names:
+                print('\t{} : {}%'.format(c, getPercentagesPerClass(y_val, c)))
+    else:
+        print('Using 0 examples for validation')
     print('Using {} examples for testing'.format(X_test.shape[0]))
     if verbosity > 1:
         for c in class_names:
