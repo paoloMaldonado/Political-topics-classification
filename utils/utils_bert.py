@@ -61,22 +61,28 @@ def createTFDatasetFromPandas(dataset, test_size, validation_size, columns=['pre
     # transform numpy arrays into tf.data.Dataset format suitable for tensorflow pipeline, then
     # shuffle and batch the data (shuffle the batch) for every split
     # to notice: batch is shuffled each iteration, you can chage this for (maybe) hyperparameter tuning 
+    AUTOTUNE = tf.data.AUTOTUNE
+
+    val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
     train_param_in = getInputDict(X_train, columns, party_binarizer=pb)
     train_ds = tf.data.Dataset.from_tensor_slices((train_param_in, 
                                                    y_train))
-    train_ds = train_ds.shuffle(shuffle_buffer_size).batch(batch_size)  
+    train_ds = train_ds.shuffle(shuffle_buffer_size).batch(batch_size)
+    train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)  
     
     if validation_size > 0.0:
         val_param_in = getInputDict(X_val, columns, party_binarizer=pb)
         val_ds   = tf.data.Dataset.from_tensor_slices((val_param_in, 
                                                     y_val))
         val_ds   = val_ds.shuffle(shuffle_buffer_size).batch(batch_size)
+        val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)  
     
     test_param_in = getInputDict(X_test, columns, party_binarizer=pb)
     test_ds  = tf.data.Dataset.from_tensor_slices((test_param_in, 
                                                    y_test))
     test_ds  = test_ds.shuffle(shuffle_buffer_size).batch(batch_size)
+    test_ds = test_ds.cache().prefetch(buffer_size=AUTOTUNE)  
     
     if validation_size > 0.0:
         return train_ds, val_ds, test_ds
