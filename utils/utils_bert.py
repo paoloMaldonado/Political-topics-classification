@@ -63,8 +63,6 @@ def createTFDatasetFromPandas(dataset, test_size, validation_size, columns=['pre
     # to notice: batch is shuffled each iteration, you can chage this for (maybe) hyperparameter tuning 
     AUTOTUNE = tf.data.AUTOTUNE
 
-    val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
-
     train_param_in = getInputDict(X_train, columns, party_binarizer=pb)
     train_ds = tf.data.Dataset.from_tensor_slices((train_param_in, 
                                                    y_train))
