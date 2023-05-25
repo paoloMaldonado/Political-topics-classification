@@ -15,18 +15,18 @@ def _instanciateModel(mode, instance):
         instance = BertClassifierForTwoPhrasesParty()
     return instance
 
-def createOptimizer(X, epochs=5):
-    epochs = 5
-    steps_per_epoch = tf.data.experimental.cardinality(X).numpy()
-    num_train_steps = steps_per_epoch * epochs
-    num_warmup_steps = int(0.1*num_train_steps)
+# def createOptimizer(X, epochs=5):
+#     epochs = 5
+#     steps_per_epoch = tf.data.experimental.cardinality(X).numpy()
+#     num_train_steps = steps_per_epoch * epochs
+#     num_warmup_steps = int(0.1*num_train_steps)
 
-    init_lr = 3e-5
-    optimizer = optimization.create_optimizer(init_lr=init_lr,
-                                              num_train_steps=num_train_steps,
-                                              num_warmup_steps=num_warmup_steps,
-                                              optimizer_type='adamw')
-    return optimizer
+#     init_lr = 3e-5
+#     optimizer = optimization.create_optimizer(init_lr=init_lr,
+#                                               num_train_steps=num_train_steps,
+#                                               num_warmup_steps=num_warmup_steps,
+#                                               optimizer_type='adamw')
+#     return optimizer
 
 class AutoBert:
     def __init__(self, bert_model, bert_tokenizer, mode='', instance=None):
@@ -48,7 +48,7 @@ class AutoBert:
 
         loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True),
         metrics = ['categorical_accuracy', tfa.metrics.F1Score(num_classes=7, average='macro', name='f1_score_macro')]
-        optimizer = createOptimizer(X, epochs=epochs)
+        optimizer = tf.keras.optimizers.Adam(learning_rate=3e-5)
 
         self.model.compile(optimizer=optimizer,
                            loss=loss,
