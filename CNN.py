@@ -43,8 +43,10 @@ class AutoCNN:
         #                                 project_name="politics")
 
         if instance == None:
-            instance = instanciateHypermodel(self.hypermodel)
-        tuner = kt.Hyperband(instance,
+            instance_model = instanciateHypermodel(self.hypermodel)
+        else:
+            instance_model = instance
+        tuner = kt.Hyperband(instance_model,
                             objective=objective_list,
                             max_epochs=50,
                             factor=factor,
@@ -77,7 +79,11 @@ class AutoCNN:
         tf_callbacks.append(tensorboard_callback)
         tf_callbacks.append(stop_early)
 
-        hypermodel = instanciateHypermodel(self.hypermodel)
+        if instance == None:
+            instance_model = instanciateHypermodel(self.hypermodel)
+        else:
+            instance_model = instance
+        hypermodel = instance_model
         model = hypermodel.build(best_hps)
         history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, validation_data=validation_data, callbacks=tf_callbacks)   
         self.model = model
