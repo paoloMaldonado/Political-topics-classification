@@ -4,7 +4,7 @@ from tensorflow.keras.utils import Sequence
 from tensorflow.keras.utils import to_categorical
 
 class DataGenerator(Sequence):
-    def __init__(self, kind, data, labels, n_classes, output_size, embedding_model, onehot_model=None, shuffle=True, batch_size=32):
+    def __init__(self, kind, data, labels, n_classes, output_size, embedding_model, onehot_model=None, mode='double_phrase_plus_party', shuffle=True, batch_size=32):
         self.kind = kind
         self.df = data
         self.labels = labels
@@ -13,6 +13,7 @@ class DataGenerator(Sequence):
         self.shuffle = shuffle
         self.batch_size = batch_size
         self.embedding_model = embedding_model
+        self.mode = mode
         if kind == 'training':
           self.onehot_encoder = OneHotEncoder(sparse_output=False)
           self.onehot_encoder.fit(self.df.party.values.reshape(-1, 1))
@@ -33,10 +34,17 @@ class DataGenerator(Sequence):
 
     def __getitem__(self, index):
         # X is (batch_size, number of tokens, embedding size) -> (32, 60, 300)
-        X = {'prev_phrase': np.empty((self.batch_size, *self.output_size)), 
-             'phrase': np.empty((self.batch_size, *self.output_size)),
-             'party': np.empty((self.batch_size, 1, 78))} # there are 78 political parties
-        #X = {'phrase': np.empty((self.batch_size, *self.output_size))}
+        if self.mode == 'double_phrase_plus_party': 
+            X = {'prev_phrase': np.empty((self.batch_size, *self.output_size)), 
+                'phrase': np.empty((self.batch_size, *self.output_size)),
+                'party': np.empty((self.batch_size, 1, 78))} # there are 78 political parties
+        elif self.mode == 'double_phrase':
+            X = {'prev_phrase': np.empty((self.batch_size, *self.output_size)), 
+                'phrase': np.empty((self.batch_size, *self.output_size))}
+        elif self.mode == 'single_phrase':
+            X = {'phrase': np.empty((self.batch_size, *self.output_size))}
+        else:
+            raise Exception('Unknown mode. Please specified a valid mode')
         y = np.empty((self.batch_size), dtype=int)
 
         # get the indices of the requested batch
@@ -50,9 +58,15 @@ class DataGenerator(Sequence):
             party       = self.df.iloc[data_index, 2] # 2 is the column 'party'
 
             # Store sample
-            X['prev_phrase'][i,] = self.__getWordMatrixPadded(prev_phrase, self.embedding_model)
-            X['phrase'][i,]      = self.__getWordMatrixPadded(phrase, self.embedding_model)
-            X['party'][i,]       = self.onehot_encoder.transform(np.array(party).reshape(-1, 1))
+            if self.mode == 'double_phrase_plus_party': 
+                X['prev_phrase'][i,] = self.__getWordMatrixPadded(prev_phrase, self.embedding_model)
+                X['phrase'][i,]      = self.__getWordMatrixPadded(phrase, self.embedding_model)
+                X['party'][i,]       = self.onehot_encoder.transform(np.array(party).reshape(-1, 1))
+            elif self.mode == 'double_phrase':
+                X['prev_phrase'][i,] = self.__getWordMatrixPadded(prev_phrase, self.embedding_model)
+                X['phrase'][i,]      = self.__getWordMatrixPadded(phrase, self.embedding_model)
+            elif self.mode == 'single_phrase':
+                X['phrase'][i,]      = self.__getWordMatrixPadded(phrase, self.embedding_model)
             
             # Store label
             y[i] = self.df.iloc[data_index, 3] # 3 is the column 'label'

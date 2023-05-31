@@ -4,7 +4,7 @@ from tensorflow.keras import layers
 import tensorflow_addons as tfa
 import keras_tuner as kt
 
-class GRUHyperModel(kt.HyperModel):
+class LSTMHyperModel(kt.HyperModel):
     def build(self, hp):
         input_shape = (60, 300) #change
         prev_phrase_in = tf.keras.Input(shape=input_shape, name='prev_phrase')
@@ -20,14 +20,12 @@ class GRUHyperModel(kt.HyperModel):
 
         # for previous phrase
         x_prev = layers.Masking(mask_value=0.)(prev_phrase_in)
-        x_prev = layers.Bidirectional(layers.GRU(units=hp_units, return_sequences=True, name="prev_gru"), name="prev_bidirectional")(x_prev)
-        x_prev = layers.GlobalAveragePooling1D()(x_prev)
+        x_prev = layers.LSTM(units=hp_units, name="prev_gru")(x_prev)
         mixed_layers.append(x_prev)
 
         # for current phrase
         x_curr = layers.Masking(mask_value=0.)(phrase_in)
-        x_curr = layers.Bidirectional(layers.GRU(units=hp_units, return_sequences=True, name="curr_gru"), name="curr_bidirectional")(x_curr)
-        x_curr = layers.GlobalAveragePooling1D()(x_curr)
+        x_curr = layers.LSTM(units=hp_units, name="curr_gru")(x_curr)
         mixed_layers.append(x_curr)
 
         # Append the correspond political party
@@ -35,7 +33,6 @@ class GRUHyperModel(kt.HyperModel):
         mixed_layers.append(party)
 
         x = layers.Concatenate()(mixed_layers)
-        x = layers.Flatten()(x)
 
         for i in range(hp.Int("num_hidden_layers", 0, 1)):
             x = layers.Dropout(rate=hp_dropout_rate)(x)

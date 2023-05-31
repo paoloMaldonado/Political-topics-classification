@@ -3,17 +3,14 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 import keras_tuner as kt
 from CNN_hypermodel import ConvHyperModel
-# from CNN_hypermodel70 import ConvHyperModel70, SimpleConvHyperModel70
-# from CNN_hypermodel65 import ConvHyperModel65, SimpleConvHyperModel65
-# from CNN_hypermodel60 import ConvHyperModel60, SimpleConvHyperModel60
-# from CNN_hypermodel50 import ConvHyperModel50, SimpleConvHyperModel50
-# from CNN_hypermodel40 import ConvHyperModel40, SimpleConvHyperModel40
-# from CNN_hypermodel30 import ConvHyperModel30, SimpleConvHyperModel30
+from LSTM_hypermodel import LSTMHyperModel
 from GRU_hypermodel import GRUHyperModel
 
 def instanciateHypermodel(hypermodel):
     if hypermodel == "cnn":
         return ConvHyperModel()
+    elif hypermodel == "lstm":
+        return LSTMHyperModel()
     elif hypermodel == "gru":
         return GRUHyperModel()
     return
@@ -25,7 +22,7 @@ class AutoCNN:
         self.model = None
         self.hypermodel = hypermodel
 
-    def fit_and_tune(self, X, y=None, epochs=50, validation_split=0.2, validation_data=None, objective=["val_categorical_accuracy"], factor=3, n_trials=100, refit=True, overwrite=True, checkpoint_path=None, **kwargs):        
+    def fit_and_tune(self, X, y=None, epochs=50, validation_split=0.2, validation_data=None, instance=None, objective=["val_categorical_accuracy"], factor=3, refit=True, overwrite=True, checkpoint_path=None, **kwargs):        
         objective_list = []
 
         if "val_categorical_accuracy" in objective:
@@ -45,7 +42,9 @@ class AutoCNN:
         #                                 directory="../CNN_finetune",
         #                                 project_name="politics")
 
-        tuner = kt.Hyperband(instanciateHypermodel(self.hypermodel),
+        if instance == None:
+            instance = instanciateHypermodel(self.hypermodel)
+        tuner = kt.Hyperband(instance,
                             objective=objective_list,
                             max_epochs=50,
                             factor=factor,
@@ -82,12 +81,6 @@ class AutoCNN:
         model = hypermodel.build(best_hps)
         history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, validation_data=validation_data, callbacks=tf_callbacks)   
         self.model = model
-        # val_per_epoch = history.history[objective]
-        # if objective == "val_loss":
-        #     best_epoch = val_per_epoch.index(min(val_per_epoch)) + 1
-        # best_epoch = val_per_epoch.index(max(val_per_epoch)) + 1
-        # print("*"*10)
-        # print('Best epoch: '.format(best_epoch))
 
     def get_best_hyperparameters(self, verbose=1):
         if self.tuner == None:
@@ -99,14 +92,11 @@ class AutoCNN:
         if verbose == 1:
             print("Hyperparameters")
             print("*"*10)
-            if self.hypermodel.startswith("cnn"):
+            if self.hypermodel == "cnn":
                 print("Number of convolutional layers:", best_hps.get('num_conv_layers'))
-            if self.hypermodel.startswith("simple_cnn"):
-                print("Kernel size:", best_hps.get('kernel_size'))
-            if self.hypermodel.startswith("cnn") or self.hypermodel.startswith("simple_cnn"):
                 print("Number of filters:", best_hps.get('filters'))
-            if self.hypermodel == "gru":
-                print("GRU units:", best_hps.get('gru_units'))
+            if self.hypermodel == "gru" or self.hypermodel == "lstm":
+                print("RNN units:", best_hps.get('units'))
                 
             print("Dropout rate:", best_hps.get('dropout_rate'))
             print("Number of hidden linear layers:", best_hps.get('num_hidden_layers'))
