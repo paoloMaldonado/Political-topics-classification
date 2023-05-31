@@ -22,7 +22,7 @@ class AutoCNN:
         self.model = None
         self.hypermodel = hypermodel
 
-    def fit_and_tune(self, X, y=None, epochs=50, validation_split=0.2, validation_data=None, instance=None, objective=["val_categorical_accuracy"], factor=3, refit=True, overwrite=True, checkpoint_path=None, **kwargs):        
+    def fit_and_tune(self, X, y=None, epochs=50, validation_split=0.2, validation_data=None, objective=["val_categorical_accuracy"], factor=3, refit=True, overwrite=True, checkpoint_path=None, **kwargs):        
         objective_list = []
 
         if "val_categorical_accuracy" in objective:
@@ -42,11 +42,7 @@ class AutoCNN:
         #                                 directory="../CNN_finetune",
         #                                 project_name="politics")
 
-        if instance == None:
-            instance_model = instanciateHypermodel(self.hypermodel)
-        else:
-            instance_model = instance
-        tuner = kt.Hyperband(instance_model,
+        tuner = kt.Hyperband(instanciateHypermodel(self.hypermodel),
                             objective=objective_list,
                             max_epochs=50,
                             factor=factor,
@@ -74,16 +70,11 @@ class AutoCNN:
                                                              verbose=1)
             tf_callbacks.append(cp_callback)
 
-
         tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=kwargs['log_dir'])
         tf_callbacks.append(tensorboard_callback)
         tf_callbacks.append(stop_early)
 
-        if instance == None:
-            instance_model = instanciateHypermodel(self.hypermodel)
-        else:
-            instance_model = instance
-        hypermodel = instance_model
+        hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
         history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, validation_data=validation_data, callbacks=tf_callbacks)   
         self.model = model
