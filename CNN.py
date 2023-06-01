@@ -22,7 +22,7 @@ class AutoCNN:
         self.model = None
         self.hypermodel = hypermodel
 
-    def fit_and_tune(self, X, y=None, epochs=50, validation_split=0.2, validation_data=None, objective=["val_categorical_accuracy"], factor=3, refit=True, overwrite=True, checkpoint_path=None, **kwargs):        
+    def fit_and_tune(self, X, y=None, epochs=50, validation_split=0.2, validation_data=None, objective=["val_categorical_accuracy"], factor=3, refit=True, build_only=False, overwrite=True, checkpoint_path=None, **kwargs):        
         objective_list = []
 
         if "val_categorical_accuracy" in objective:
@@ -76,6 +76,10 @@ class AutoCNN:
 
         hypermodel = instanciateHypermodel(self.hypermodel)
         model = hypermodel.build(best_hps)
+        if build_only:
+            print("Model built, skipping training, now you can use predict() with saved weights")
+            self.model = model
+            return
         history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, validation_data=validation_data, callbacks=tf_callbacks)   
         self.model = model
 
