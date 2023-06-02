@@ -4,6 +4,7 @@ import tensorflow_addons as tfa
 import keras_tuner as kt
 from CNN_hypermodel import ConvHyperModel
 from LSTM_hypermodel import LSTMHyperModel
+from GRU_hypermodel import BiGRUHyperModel
 from GRU_hypermodel import GRUHyperModel
 
 def instanciateHypermodel(hypermodel):
@@ -13,6 +14,8 @@ def instanciateHypermodel(hypermodel):
         return LSTMHyperModel()
     elif hypermodel == "gru":
         return GRUHyperModel()
+    elif hypermodel == "bi_gru":
+        return BiGRUHyperModel()
     return
 
 
@@ -96,7 +99,7 @@ class AutoCNN:
             if self.hypermodel == "cnn":
                 print("Number of convolutional layers:", best_hps.get('num_conv_layers'))
                 print("Number of filters:", best_hps.get('filters'))
-            if self.hypermodel == "gru" or self.hypermodel == "lstm":
+            if self.hypermodel == "bi_gru" or self.hypermodel == "lstm":
                 print("RNN units:", best_hps.get('units'))
                 
             print("Dropout rate:", best_hps.get('dropout_rate'))
