@@ -83,6 +83,7 @@ class AutoCNN:
             print("Model built, skipping training, now you can use predict() with saved weights")
             self.model = model
             return
+        # hypermodel call model.fit() internally, after training, save the model in self.model attribute
         history = hypermodel.fit(best_hps, model, x=X, y=y, epochs=epochs, validation_split=validation_split, validation_data=validation_data, callbacks=tf_callbacks)   
         self.model = model
 
@@ -99,7 +100,7 @@ class AutoCNN:
             if self.hypermodel == "cnn":
                 print("Number of convolutional layers:", best_hps.get('num_conv_layers'))
                 print("Number of filters:", best_hps.get('filters'))
-            if self.hypermodel == "bi_gru" or self.hypermodel == "lstm":
+            if self.hypermodel == "bi_gru" or self.hypermodel == "gru" or self.hypermodel == "lstm":  # COMMIT 
                 print("RNN units:", best_hps.get('units'))
                 
             print("Dropout rate:", best_hps.get('dropout_rate'))
