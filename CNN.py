@@ -6,6 +6,7 @@ from CNN_hypermodel import ConvHyperModel
 from LSTM_hypermodel import LSTMHyperModel
 from GRU_hypermodel import BiGRUHyperModel
 from GRU_hypermodel import GRUHyperModel
+from C_GRU_hypermodel import sCGRU
 
 def instanciateHypermodel(hypermodel):
     if hypermodel == "cnn":
@@ -16,6 +17,8 @@ def instanciateHypermodel(hypermodel):
         return GRUHyperModel()
     elif hypermodel == "bi_gru":
         return BiGRUHyperModel()
+    elif hypermodel == "s_cgru":
+        return sCGRU
     return
 
 
@@ -97,10 +100,17 @@ class AutoCNN:
         if verbose == 1:
             print("Hyperparameters")
             print("*"*10)
+            if self.hypermodel == "s_cgru":
+                print("Dropout rate:", best_hps.get('dropout_rate'))
+                print("Number of filters:", best_hps.get('filters'))
+                print("Kernel size:", best_hps.get('kernel_size'))
+                print("RNN units:", best_hps.get('units'))
+                return best_hps
+            
             if self.hypermodel == "cnn":
                 print("Number of convolutional layers:", best_hps.get('num_conv_layers'))
                 print("Number of filters:", best_hps.get('filters'))
-            if self.hypermodel == "bi_gru" or self.hypermodel == "gru" or self.hypermodel == "lstm":  # COMMIT 
+            if self.hypermodel == "bi_gru" or self.hypermodel == "gru" or self.hypermodel == "lstm": 
                 print("RNN units:", best_hps.get('units'))
                 
             print("Dropout rate:", best_hps.get('dropout_rate'))
