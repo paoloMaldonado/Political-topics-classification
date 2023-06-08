@@ -18,7 +18,7 @@ def instanciateHypermodel(hypermodel):
     elif hypermodel == "bi_gru":
         return BiGRUHyperModel()
     elif hypermodel == "s_cgru":
-        return sCGRU
+        return sCGRU()
     return
 
 
