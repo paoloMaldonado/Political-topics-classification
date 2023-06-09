@@ -4,15 +4,13 @@ import tensorflow_addons as tfa
 from transformers import TFBertTokenizer, TFBertModel
 from official.nlp import optimization
 
-from BertClassifiers import BertClassifier, BertClassifierForTwoPhrases, BertClassifierForTwoPhrasesParty
+from BertClassifiers import BertClassifier, BertClassifierForTwoPhrases
 
 def _instanciateModel(mode, instance):
     if mode == "single_phrase":
         instance = BertClassifier()
     elif mode == "double_phrase":
         instance = BertClassifierForTwoPhrases()
-    elif mode == "double_phrase_plus_party":
-        instance = BertClassifierForTwoPhrasesParty()
     return instance
 
 # def createOptimizer(X, epochs=5):
